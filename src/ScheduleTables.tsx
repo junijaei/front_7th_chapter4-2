@@ -1,64 +1,9 @@
-import { Button, ButtonGroup, Flex, Heading, Stack } from '@chakra-ui/react';
-import ScheduleTable from './components/schedule-table';
+import { Flex } from '@chakra-ui/react';
+import { useAtomValue } from 'jotai';
+import { useCallback, useState } from 'react';
+import { ScheduleTableLayout } from './components/schedule-table/ScheduleTableLayout.tsx';
 import SearchDialog from './components/search-dialog';
-import { memo, useCallback, useState } from 'react';
-import ScheduleDndProvider from './ScheduleDndProvider.tsx';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { tableIdsAtom, getScheduleAtom, addTableAtom, removeTableAtom } from './store/scheduleAtoms';
-
-interface ScheduleTableItemProps {
-  tableId: string;
-  index: number;
-  disabledRemoveButton: boolean;
-  onSearchClick: (tableId: string, day?: string, time?: number) => void;
-}
-
-const ScheduleTableItem = memo(({ tableId, index, disabledRemoveButton, onSearchClick }: ScheduleTableItemProps) => {
-  const [schedules, setSchedules] = useAtom(getScheduleAtom(tableId));
-  const addTable = useSetAtom(addTableAtom);
-  const removeTable = useSetAtom(removeTableAtom);
-
-  const handleScheduleTimeClick = useCallback(
-    (timeInfo: { day: string; time: number }) => onSearchClick(tableId, timeInfo.day, timeInfo.time),
-    [tableId, onSearchClick],
-  );
-
-  const handleDeleteButtonClick = useCallback(
-    ({ day, time }: { day: string; time: number }) => {
-      setSchedules((prev) => prev.filter((schedule) => schedule.day !== day || !schedule.range.includes(time)));
-    },
-    [setSchedules],
-  );
-
-  return (
-    <Stack width="600px">
-      <Flex justifyContent="space-between" alignItems="center">
-        <Heading as="h3" fontSize="lg">
-          시간표 {index + 1}
-        </Heading>
-        <ButtonGroup size="sm" isAttached>
-          <Button colorScheme="green" onClick={() => onSearchClick(tableId)}>
-            시간표 추가
-          </Button>
-          <Button colorScheme="green" mx="1px" onClick={() => addTable(tableId)}>
-            복제
-          </Button>
-          <Button colorScheme="green" isDisabled={disabledRemoveButton} onClick={() => removeTable(tableId)}>
-            삭제
-          </Button>
-        </ButtonGroup>
-      </Flex>
-      <ScheduleDndProvider tableId={tableId}>
-        <ScheduleTable
-          schedules={schedules}
-          tableId={tableId}
-          onScheduleTimeClick={handleScheduleTimeClick}
-          onDeleteButtonClick={handleDeleteButtonClick}
-        />
-      </ScheduleDndProvider>
-    </Stack>
-  );
-});
+import { tableIdsAtom } from './store/scheduleAtoms';
 
 export const ScheduleTables = () => {
   const tableIds = useAtomValue(tableIdsAtom);
@@ -79,7 +24,7 @@ export const ScheduleTables = () => {
     <>
       <Flex w="full" gap={6} p={6} flexWrap="wrap">
         {tableIds.map((tableId, index) => (
-          <ScheduleTableItem
+          <ScheduleTableLayout
             key={tableId}
             tableId={tableId}
             index={index}

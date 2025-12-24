@@ -15,15 +15,19 @@ import { ComponentProps, memo, useCallback, useMemo } from 'react';
 import { CellSize, DAY_LABELS } from '../../constants/index.ts';
 import { Schedule } from '../../types.ts';
 import { ScheduleTableStatic } from './ScheduleTableStatic.tsx';
+import { useAtomValue } from 'jotai';
+import { getScheduleAtom } from '../../store/scheduleAtoms.ts';
 
 interface Props {
   tableId: string;
-  schedules: Schedule[];
   onScheduleTimeClick?: (timeInfo: { day: string; time: number }) => void;
   onDeleteButtonClick?: (timeInfo: { day: string; time: number }) => void;
 }
 
-const ScheduleTable = memo(({ tableId, schedules, onScheduleTimeClick, onDeleteButtonClick }: Props) => {
+const ScheduleTable = memo(({ tableId, onScheduleTimeClick, onDeleteButtonClick }: Props) => {
+  console.log('schedule table');
+  const schedules = useAtomValue(getScheduleAtom(tableId));
+
   const getColor = useCallback(
     (lectureId: string): string => {
       const lectures = [...new Set(schedules.map(({ lecture }) => lecture.id))];
@@ -79,13 +83,13 @@ const DraggableSchedule = memo(
       onDeleteButtonClick: (schedule: Schedule) => void;
     }) => {
     const { day, range, room, lecture } = data;
-    const { attributes, setNodeRef, listeners, transform, isDragging } = useDraggable({ id });
+    const { attributes, setNodeRef, listeners, transform } = useDraggable({ id });
     const leftIndex = DAY_LABELS.indexOf(day as (typeof DAY_LABELS)[number]);
     const topIndex = range[0] - 1;
     const size = range.length;
 
     return (
-      <Popover>
+      <Popover isLazy>
         <PopoverTrigger>
           <Box
             position="absolute"
@@ -108,18 +112,16 @@ const DraggableSchedule = memo(
             <Text fontSize="xs">{room}</Text>
           </Box>
         </PopoverTrigger>
-        {!isDragging && (
-          <PopoverContent onClick={(event) => event.stopPropagation()}>
-            <PopoverArrow />
-            <PopoverCloseButton />
-            <PopoverBody>
-              <Text>강의를 삭제하시겠습니까?</Text>
-              <Button colorScheme="red" size="xs" onClick={() => onDeleteButtonClick(data)}>
-                삭제
-              </Button>
-            </PopoverBody>
-          </PopoverContent>
-        )}
+        <PopoverContent onClick={(event) => event.stopPropagation()}>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverBody>
+            <Text>강의를 삭제하시겠습니까?</Text>
+            <Button colorScheme="red" size="xs" onClick={() => onDeleteButtonClick(data)}>
+              삭제
+            </Button>
+          </PopoverBody>
+        </PopoverContent>
       </Popover>
     );
   },
