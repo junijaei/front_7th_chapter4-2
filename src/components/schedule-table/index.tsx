@@ -25,7 +25,6 @@ interface Props {
 }
 
 const ScheduleTable = memo(({ tableId, onScheduleTimeClick, onDeleteButtonClick }: Props) => {
-  console.log('schedule table');
   const schedules = useAtomValue(getScheduleAtom(tableId));
 
   const getColor = useCallback(

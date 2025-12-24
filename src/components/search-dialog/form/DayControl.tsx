@@ -1,5 +1,5 @@
 import { Checkbox, CheckboxGroup, FormControl, FormLabel, HStack } from '@chakra-ui/react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 export const DayControl = memo(
   ({
@@ -13,16 +13,19 @@ export const DayControl = memo(
   }) => {
     const [days, setDays] = useState<string[]>(initialValue ?? []);
 
+    const handleChange = useCallback(
+      (value: string[]) => {
+        setDays(value);
+        onChange(value);
+      },
+      [onChange],
+    );
+
     useEffect(() => {
       if (initialValue) {
-        setDays(initialValue);
+        onChange(initialValue);
       }
-    }, [initialValue]);
-
-    const handleChange = (value: string[]) => {
-      setDays(value);
-      onChange(value);
-    };
+    }, [onChange, initialValue]);
 
     return (
       <FormControl>

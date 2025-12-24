@@ -10,7 +10,7 @@ import {
   TagLabel,
   Wrap,
 } from '@chakra-ui/react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 export const TimeControl = memo(
   ({
@@ -24,22 +24,25 @@ export const TimeControl = memo(
   }) => {
     const [times, setTimes] = useState<number[]>(initialValue ?? []);
 
-    useEffect(() => {
-      if (initialValue) {
-        setTimes(initialValue);
-      }
-    }, [initialValue]);
-
-    const handleChange = (value: number[]) => {
-      setTimes(value);
-      onChange(value);
-    };
+    const handleChange = useCallback(
+      (value: number[]) => {
+        setTimes(value);
+        onChange(value);
+      },
+      [onChange],
+    );
 
     const handleRemove = (timeToRemove: number) => {
       const newTimes = times.filter((v) => v !== timeToRemove);
       setTimes(newTimes);
       onChange(newTimes);
     };
+
+    useEffect(() => {
+      if (initialValue) {
+        onChange(initialValue);
+      }
+    }, [initialValue, onChange]);
 
     return (
       <FormControl>
