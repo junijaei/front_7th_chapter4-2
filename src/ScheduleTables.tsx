@@ -1,11 +1,12 @@
 import { Flex } from '@chakra-ui/react';
 import { useAtomValue } from 'jotai';
-import { useCallback, useState } from 'react';
+import { lazy, useCallback, useState } from 'react';
 import { ScheduleTableLayout } from './components/schedule-table/ScheduleTableLayout.tsx';
-import SearchDialog from './components/search-dialog';
 import { tableIdsAtom } from './store/scheduleAtoms';
 
 export const ScheduleTables = () => {
+  const SearchDialog = lazy(() => import('./components/search-dialog'));
+
   const tableIds = useAtomValue(tableIdsAtom);
   const [searchInfo, setSearchInfo] = useState<{
     tableId: string;
