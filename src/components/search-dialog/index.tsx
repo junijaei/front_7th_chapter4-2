@@ -17,7 +17,7 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchAllLectures } from '../../api/lectures.ts';
 import { useScheduleContext } from '../../ScheduleContext.tsx';
-import { CREDITS, DAY_LABELS, GRADES, TIME_SLOTS } from '../../constants.ts';
+import { CREDITS, DAY_LABELS, GRADES, TIME_SLOTS } from '../../constants';
 import { Lecture, SearchOption } from '../../types.ts';
 import { parseSchedule } from '../../utils.ts';
 import { LecturesTable } from './LecturesTable.tsx';
